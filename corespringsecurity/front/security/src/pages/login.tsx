@@ -5,13 +5,10 @@ import axios, { Axios, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 
 
-const LoginFrom = () => {
+const LoginForm = () => {
     const [values, setValues] = useState({
-        id: "",
         username: "",
         password: "",
-        age: 0,
-        role: "",
     })
 
     const onChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -21,36 +18,26 @@ const LoginFrom = () => {
         });
     };
 
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
-        axios.post("http://localhost:8080/users", values)
-        .then(res => {console.log(res)});
+        axios.post("http://localhost:8080/api/login", values,
+            {
+                headers: {
+                    "Access-Control-Allow-Origin": "http://localhost:3000"
+                },
+            })
+            .then(res => { console.log(res) });
     }
     return (
-        <div>
-            <form onSubmit={onSubmit}>
-                <Input name="id" onChange={onChange}/>
-                <Input name="username" onChange={onChange}/>
-                <Input name="password" onChange={onChange}/>
-                <Input name="email" onChange={onChange}/>
-                <Input name="age" onChange={onChange}/>
-                <Input name="role" onChange={onChange}/>
-                <button>회원가입</button>
-            </form>
-        </div>
+        <>
+            <input type="text" placeholder="id" name="username" onChange={onChange}></input>
+            <input type="text" placeholder="password" name="password" onChange={onChange}></input>
+            <button className="btn btn-primary" onClick={onSubmit} >로그인</button>
+        </>
     );
 }
 
-const Input = (props: {name: string, onChange: (e: React.FormEvent<HTMLInputElement>) => void }) => {
-    return (
-        <input
-                    name={props.name}
-                    onChange={props.onChange}
-                    type="text"
-                    placeholder={props.name}
-                />
-    )
-}
 
-export default LoginFrom;
+
+export default LoginForm;
 

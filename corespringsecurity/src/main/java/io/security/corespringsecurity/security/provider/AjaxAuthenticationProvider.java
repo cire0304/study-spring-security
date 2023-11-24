@@ -1,10 +1,13 @@
 package io.security.corespringsecurity.security.provider;
 
+import io.security.corespringsecurity.security.filter.AjaxAuthenticationToken;
 import io.security.corespringsecurity.security.service.AccountContext;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,11 +16,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
-    private final UserDetailsService userDetailsService;
-
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -31,7 +35,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("BadCredentialsException");
         }
 
-        return new UsernamePasswordAuthenticationToken(
+        return new AjaxAuthenticationToken(
                 accountContext.getAccount(),
                 null,
                 accountContext.getAuthorities());
@@ -39,6 +43,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return AjaxAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }

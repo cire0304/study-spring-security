@@ -17,7 +17,7 @@ public class HomeController {
 		return "home";
 	}
 
-	@GetMapping(value="/message")
+	@GetMapping(value="/api/message")
 	public String message() throws Exception {
 		return "message";
 	}

@@ -7,9 +7,10 @@ import NavBar from './componets/NavBar'
 
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 import SideBar from "./componets/SideBar";
-import LoginFrom from "./pages/login"
+import User from "./pages/user"
 import Mypage from "./pages/mypage";
 import Message from "./pages/message";
+import LoginForm from "./pages/login";
 
 
 function App() {
@@ -28,8 +29,9 @@ function App() {
         <main style={{ gridArea: 'main' }}>
           <Routes>
             <Route path="/" element={<div>home</div>}/>
-            <Route path="/users" element={<LoginFrom/>}/>
-            <Route path="/mypage" element={<Mypage/>}/>
+            <Route path="/users" element={<User/>}/>
+            <Route path="/login" element={ <LoginForm/>} />
+            <Route path="/api/mypage" element={<Mypage/>}/>
             <Route path="/message" element={<Message/>}/>
           </Routes>
         </main>

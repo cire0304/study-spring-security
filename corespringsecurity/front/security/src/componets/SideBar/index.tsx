@@ -20,10 +20,10 @@ const SideBar = () => {
                     <Nav.Link onClick={() => navigete("sdf")} >대시보드</Nav.Link>
                 </Nav.Item>
                 <Nav.Item className="mynav">
-                    <Nav.Link onClick={() => navigete("/mypage")} >마이페이지</Nav.Link>
+                    <Nav.Link onClick={() => navigete("/api/mypage")} >마이페이지</Nav.Link>
                 </Nav.Item>
                 <Nav.Item className="mynav">
-                    <Nav.Link onClick={() => navigete("/message")} >메시지</Nav.Link>
+                    <Nav.Link onClick={() => navigete("/api/message")} >메시지</Nav.Link>
                 </Nav.Item>
                 <Nav.Item className="mynav">
                     <Nav.Link onClick={() => navigete("sdf")} >환경설정</Nav.Link>

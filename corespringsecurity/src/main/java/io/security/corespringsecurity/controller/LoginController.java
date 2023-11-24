@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    @GetMapping("/login")
+    @GetMapping( value = {"/login", "/api/login"})
     public String login() {
         return "login";
     }

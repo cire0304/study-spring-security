@@ -17,7 +17,7 @@ public class UserController {
 
     private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("/mypage")
+    @GetMapping("/api/mypage")
     public String myPage() {
         return "mypage";
     }

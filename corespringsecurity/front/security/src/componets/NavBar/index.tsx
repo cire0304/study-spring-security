@@ -12,9 +12,11 @@ const NavBar = (props: any) => {
           <Navbar.Brand href="/" >Core Spring Security</Navbar.Brand>
           <Nav >
             <Nav.Link href="/users" >
-              <span className='font-bold'> HOME </span>
+              <span > 회원가입 </span>
             </Nav.Link>
-            
+            <Nav.Link href="/login" >
+              <span > 로그인 </span>
+            </Nav.Link>
           </Nav>
 
         </Container>

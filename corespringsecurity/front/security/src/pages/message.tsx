@@ -9,7 +9,7 @@ const Message = () => {
     const [value, setValue] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:8080/message")
+        axios.get("http://localhost:8080/api/message")
         .then(res => setValue(res.data));
     },[value])
 

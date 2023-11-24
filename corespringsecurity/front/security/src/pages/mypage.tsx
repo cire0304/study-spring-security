@@ -9,7 +9,7 @@ const Mypage = () => {
     const [value, setValue] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:8080/mypage")
+        axios.get("http://localhost:8080/api/mypage")
         .then(res => setValue(res.data));
     },[value])
 

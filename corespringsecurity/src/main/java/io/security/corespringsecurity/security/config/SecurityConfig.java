@@ -1,12 +1,16 @@
 package io.security.corespringsecurity.security.config;
 
+import io.security.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
+import io.security.corespringsecurity.security.provider.FormAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -17,18 +21,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Order(1)
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final AuthenticationProvider authenticationProvider;
     private final AuthenticationDetailsSource authenticationDetailsSource;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
-
+    private final FormAuthenticationProvider formAuthenticationProvider;
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
@@ -40,19 +45,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/", "/users").permitAll()
-//                        .requestMatchers("/mypage").hasRole("USER")
-                        .requestMatchers("/messages").hasRole("MANAGER")
-                        .requestMatchers("/config").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").access((new WebExpressionAuthorizationManager("hasRole('ADMIN') or hasRole('SYS')")))
-                        .anyRequest().permitAll()
+                                .requestMatchers("/", "/users").permitAll()
+                                .requestMatchers("/messages").hasRole("MANAGER")
+                                .requestMatchers("/config").hasRole("ADMIN")
+                                .requestMatchers("/admin/**").access((new WebExpressionAuthorizationManager("hasRole('ADMIN') or hasRole('SYS')")))
+                                .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
 //                .userDetailsService(userDetailsService)
-                .authenticationProvider(authenticationProvider)
+                .authenticationProvider(formAuthenticationProvider)
                 .formLogin(login -> login
                         .authenticationDetailsSource(authenticationDetailsSource)
                         .successHandler(authenticationSuccessHandler)
