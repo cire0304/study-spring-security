@@ -8,3 +8,15 @@ spring:
     hibernate:
       ddl-auto: create
 
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+
+  ssl:
+    key-store: keystore.p12
+    key-store-password: 123456
+    keyStoreType: PKCS12
+    keyAlias: tomcat
+

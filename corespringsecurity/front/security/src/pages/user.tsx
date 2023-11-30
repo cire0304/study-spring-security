@@ -23,7 +23,7 @@ const User = () => {
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        axios.post("http://localhost:8080/users", values)
+        axios.post("https://localhost:8080/users", values)
         .then(res => {console.log(res)});
     }
     return (

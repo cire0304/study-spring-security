@@ -9,7 +9,12 @@ const Mypage = () => {
     const [value, setValue] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/mypage")
+        axios.get("https://localhost:8080/api/mypage",{
+            headers: {
+                "Access-Control-Allow-Origin": "https://localhost:3000"
+            },
+            withCredentials: true
+        })
         .then(res => setValue(res.data));
     },[value])
 

@@ -22,6 +22,14 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 @Configuration
@@ -32,9 +40,9 @@ public class AjaxSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final AjaxAuthenticationProvider ajaxAuthenticationProvider;
 
-    @Bean
-    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+    // @Bean
+    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter(HttpSecurity http) throws Exception {
+        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter(http);
         ajaxLoginProcessingFilter.setFilterProcessesUrl("/api/login");
         ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManager());
         ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler());
@@ -45,7 +53,7 @@ public class AjaxSecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new AjaxAuthenticationSuccessHandler();
+        return new AjaxAuthenticationSuccessHandler(delegatingSecurityContextRepository());
     }
 
     @Bean
@@ -67,19 +75,45 @@ public class AjaxSecurityConfig {
     }
 
     @Bean
+    public DelegatingSecurityContextRepository delegatingSecurityContextRepository() {
+        return new DelegatingSecurityContextRepository(
+                new RequestAttributeSecurityContextRepository(),
+                new HttpSessionSecurityContextRepository()
+        );
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
         return http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
+                .cors(config -> config.configurationSource(source)
+                )
+                .securityContext(config -> config
+                        .securityContextRepository(delegatingSecurityContextRepository())
+                )
+                .sessionManagement(manage -> manage
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(cofig -> cofig
                         .authenticationEntryPoint(new AjaxLoginAuthenticationEntryPoint())
                         .accessDeniedHandler(ajaxAccessDeniedHandler())
                 )
-                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

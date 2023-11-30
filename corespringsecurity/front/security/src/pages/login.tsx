@@ -20,12 +20,13 @@ const LoginForm = () => {
 
     const onSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
-        axios.post("http://localhost:8080/api/login", values,
+        axios.post("https://localhost:8080/api/login", values,
             {
                 headers: {
-                    "Access-Control-Allow-Origin": "http://localhost:3000"
+                    "Access-Control-Allow-Origin": "https://localhost:3000"
                 },
-            })
+                withCredentials: true
+            } )
             .then(res => { console.log(res) });
     }
     return (
