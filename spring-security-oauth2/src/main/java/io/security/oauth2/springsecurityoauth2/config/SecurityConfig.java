@@ -23,11 +23,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // 경로 권한
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/static/js/**", "/static/images/**", "/static/css/**", "/static/scss/**").permitAll()
                         .requestMatchers("/", "login").permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/user").hasRole("USER")
+                        .requestMatchers("/auth").authenticated()
                         .anyRequest().authenticated()
                 )
+                // oauth 로그인
                 .oauth2Login(login -> login
                         .loginPage("/login")
                         .defaultSuccessUrl("/")
@@ -37,13 +42,16 @@ public class SecurityConfig {
                                         .oidcUserService(customOidcUserService)
                         )
                 )
+                // form 로그인
                 .formLogin(login -> login
                         .loginPage("/login")
                         .loginProcessingUrl("/loginProc")
                         .defaultSuccessUrl("/").permitAll()
                 )
+                // 로그인 실패
                 .exceptionHandling(config -> config
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                // 로그아웃
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .deleteCookies("JSESSIONID")
